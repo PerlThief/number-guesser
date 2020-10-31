@@ -2,6 +2,7 @@ import sys
 import pygame
 import numpy
 import pygame.gfxdraw
+from random import choice
 
 def main():
     pygame.init()
@@ -29,33 +30,40 @@ def main():
               'grey': (217,219,222)
             }
     brush_color = colors['black']
-       
+    brush_radius = 20
     while True:
         pygame.display.update()
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            
             elif event.type == pygame.MOUSEMOTION and event.buttons[0]:
                 position = event.pos
                 points.append(position)
                 points = points[-256:]
-            
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    screen.fill(colors['white'])
+                elif event.button == 4:
+                    brush_radius += 10
+                    brush_radius = min(100, brush_radius)
+                elif event.button == 5:
+                    brush_radius -= 10
+                    brush_radius = max(10, brush_radius)
             else:
                 points = []
         
         if len(points) > 1:
-            draw(screen, points, brush_color)
+            draw(screen, points, brush_color, brush_radius)
 
         FramePerSec.tick(FPS)
 
-def draw(screen, points, color):
+def draw(screen, points, color, width):
     for i in numpy.arange(len(points)):
-        pygame.gfxdraw.filled_circle(screen, points[i][0], points[i][1], 10, color)
-        pygame.gfxdraw.filled_circle(screen, points[i][0], points[i][1], 10, color)
-    
+        if i != len(points)-1:
+                pygame.draw.line(screen, color, points[i], points[i+1], width*2)
+        pygame.gfxdraw.filled_circle(screen, points[i][0], points[i][1], width, color)
+        pygame.gfxdraw.filled_circle(screen, points[i][0], points[i][1], width, color)
     return
 
 main()
