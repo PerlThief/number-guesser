@@ -1,6 +1,7 @@
 import sys
 import pygame
 import numpy
+from pygame.constants import KEYDOWN
 import pygame.gfxdraw
 from random import choice
 
@@ -31,8 +32,10 @@ def main():
             }
     brush_color = colors['black']
     brush_radius = 20
+
     while True:
         pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -50,6 +53,15 @@ def main():
                 elif event.button == 5:
                     brush_radius -= 10
                     brush_radius = max(10, brush_radius)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:
+                    i = choice(numpy.arange(7))
+                    brush_color = colors[list(colors.keys())[i]]
+                    print('Brush color changed to {}'.format(list(colors.keys())[i]))
+                    print
+                elif event.key == pygame.K_r:
+                    brush_color = colors['black']
+                    print('Brush color defaulting to black')
             else:
                 points = []
         
@@ -59,6 +71,11 @@ def main():
         FramePerSec.tick(FPS)
 
 def draw(screen, points, color, width):
+    """
+    Rudimentary algorithm to draw a continuous line
+
+    TODO: Fix the issue with circle radius and line width
+    """
     for i in numpy.arange(len(points)):
         if i != len(points)-1:
                 pygame.draw.line(screen, color, points[i], points[i+1], width*2)
